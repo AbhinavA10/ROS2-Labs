@@ -53,13 +53,13 @@ def generate_launch_description():
 
 		# Start map_server and lifecycle node after 2 seconds 
 		TimerAction(
-			period=2.0,
+			period=5.0,
 			actions=[map_server_cmd, start_lifecycle_manager_cmd],
 		),
 
 		# Start particle_filter node after 2.5 seconds
 		TimerAction(
-			period=2.5,
+			period=10.5,
 			actions=[particle_filter_node],
 		),
 	])

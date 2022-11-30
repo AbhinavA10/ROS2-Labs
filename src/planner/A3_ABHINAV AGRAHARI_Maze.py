@@ -63,7 +63,6 @@ class Node:
                 self.y: int = y
                 self.parent: Node = parent
                 self.h_n = calculate_manhattan_distance([x,y], GOAL_NODE) # heuristic to goal 1
-                # final heuristic is lesser of difference of E1 or E2 (closest goal)
                 self.g_n = 0 # starting node has no initial cost
                 if self.parent is not None:
                         self.g_n = self.parent.g_n + 1 # cost from starting position to this node is one more than parent

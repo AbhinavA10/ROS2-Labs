@@ -71,4 +71,30 @@ This tests out ROS2's Navigation stack Nav2. Using the `2D Pose Estimate` and `N
 - In another terminal run the navigation stack: `ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:=./src/planner/map/office_map/map.yaml`
 - Now use RViz to set an initial pose and goal pose for the robot. 
 
-[Using RViz for ROS' Navigation stack](https://wiki.ros.org/navigation/Tutorials/Using%20rviz%20with%20the%20Navigation%20Stack)
+When running the above, we see:
+``` bash
+>> ros2 topic list
+...
+/global_costmap/costmap
+....
+>> ros2 topic info /global_costmap/costmap
+Type: nav_msgs/msg/OccupancyGrid
+Publisher count: 1
+Subscription count: 1 
+```
+
+We can subscribe to this global cost map, to get a static costmap of the environment. Nav2 will generated an 'inflated' costmap, that we can use in A* planning
+
+### Links:
+- [nav_msgs/msg/OccupancyGrid.msg](http://docs.ros.org/en/api/nav_msgs/html/msg/OccupancyGrid.html)
+- [Published costmap topics](https://wiki.ros.org/costmap_2d#costmap_2d.2Flayered.Published_Topics)
+- [Using RViz for ROS' Navigation stack](https://wiki.ros.org/navigation/Tutorials/Using%20rviz%20with%20the%20Navigation%20Stack)
+- [ROS Map format](https://wiki.ros.org/map_server)
+- [Setting Up Lifecycle and Composition Nodes](https://navigation.ros.org/setup_guides/lifecycle_composition/setup_lifecycle_composition.html)
+- ROS2 Navigation stack intro:
+    - [ROS 2 Navigation](https://ros2-industrial-workshop.readthedocs.io/en/latest/_source/navigation/ROS2-Navigation.html)
+    - [Navigating with a Physical Turtlebot 3](https://navigation.ros.org/tutorials/docs/navigation2_on_real_turtlebot3.html)
+    - [Getting Started](https://navigation.ros.org/getting_started/index.html)
+
+## Lab 3
+TODO
