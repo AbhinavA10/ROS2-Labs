@@ -10,9 +10,12 @@ This repo is itself a ROS2 workspace. Each folder in `src/` is a ROS2 package
 To setup the packages, build and source this workspace: 
 
 ```bash
+rosdep install --from-paths src --ignore-src -r -y
+pip install scikit-image
 colcon build --symlink-install
 source install/setup.bash
 ```
+
 ## Learning ROS2 
 [Ros2 Tutorials](https://docs.ros.org/en/galactic/Tutorials.html)
 
@@ -101,16 +104,6 @@ We can subscribe to this global cost map, to get a static costmap of the environ
 
 ## Lab 3 - Path planning and control
 
-### Setup
-To setup the `planner` package, build and source this workspace: 
-
-```bash
-rosdep install --from-paths src --ignore-src -r -y
-pip install scikit-image
-colcon build --symlink-install
-source install/setup.bash
-```
-
 ### Running
 
 - `ros2 launch planner planner.launch.py`
@@ -121,4 +114,4 @@ source install/setup.bash
   - `ros2 run planner navigation_client.py --ros-args -p predefined_goal:=True -p goal_x:=4.0 -p goal_y:=0.8`
 
 ### Notes
-See [Lab3_extra_notes](./docs/Lab3_extra_notes.md) for more
+See [Lab3_extra_notes](./docs/06_Lab3_extra_notes.md) for more
