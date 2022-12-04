@@ -117,8 +117,8 @@ class AStarActionServer(Node):
             self.occupancy_map = np.reshape(msg.data, (self.height, self.width))
             
             # downsample map for faster processing
-            self.occupancy_map = downscale_local_mean(self.occupancy_map, (2,2))
-            self.map_res *= 2
+            self.occupancy_map = downscale_local_mean(self.occupancy_map, (4,4))
+            self.map_res *= 4
             
             # Convert costmap message from y-by-x to x-by-y coordinates as it is row-major order, with (0,0) at bottom left
             self.occupancy_map = np.transpose(self.occupancy_map)

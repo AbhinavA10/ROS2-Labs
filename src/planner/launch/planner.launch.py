@@ -12,16 +12,34 @@ def generate_launch_description():
 
 	# Default initial robot positions for gazebo simulation.
 	# Should be modified to match robot's actual position as needed.
-	initial_pose_x = -2
-	initial_pose_y = -0.5
+	initial_pose_x = 0
+	initial_pose_y = 0
 	initial_yaw = 0
+	gazebo_world_launch_file = ''
+	map_file_house = './src/planner/map/office_map/map.yaml'
+	map_file_maze = './src/planner/map/Entry_4/Entry_4.yaml'
 
 	lifecycle_nodes = [
 		'map_server',
 		'planner_server'
 	]
 
-	map_file = './src/planner/map/office_map/map.yaml'
+	# Change below map as needed
+	map_file = map_file_house
+
+
+	if map_file is map_file_house:
+		# Gazebo launch file has an odom (world frame) offset
+		initial_pose_x = -2
+		initial_pose_y = -0.5
+		initial_yaw = 0
+		gazebo_world_launch_file = 'launch/turtlebot3_house.launch.py'
+	elif map_file is map_file_maze:
+		# odom and map frame already coincide
+		initial_pose_x = 0
+		initial_pose_y = 0
+		initial_yaw = 0
+		gazebo_world_launch_file = 'launch/empty_world.launch.py'
 	
 	return LaunchDescription([
 		# include another launch file
@@ -29,13 +47,13 @@ def generate_launch_description():
 			PythonLaunchDescriptionSource(
 				os.path.join(
 					get_package_share_directory('turtlebot3_gazebo'),
-					'launch/turtlebot3_house.launch.py'))
+					gazebo_world_launch_file))
 		),
 		
 		
 		# Start after Gazebo loads
 		TimerAction(
-			period=7.0,
+			period=5.0,
 			actions=[
 		IncludeLaunchDescription(
 			PythonLaunchDescriptionSource(

@@ -4,7 +4,7 @@ import yaml
 from scipy.ndimage import rotate
 import heapq #Priority queue implementation
 from collections import deque as queue
-import math
+# import bezier
 
 # List containing directions for neighboring indices (i,j) = (x,y)
 dirVal = [ (0,1), (1,1), (1,0),(0,-1), (1,-1), (-1,0), (-1, -1), (-1, 1)]
@@ -80,6 +80,11 @@ def A_star(maze: np.ndarray, start, end):
                 if current_node == end_node:
                     # Return the shortest path found along with heuristic
                     return p, heuristic_diag(start_node.position[0], start_node.position[1], end_node.position[0], end_node.position[0])
+                    # Smooth A* path using bezier curve
+                    # curve = bezier.Curve.from_nodes(np.asfortranarray(path.T))
+                    # s_vals = np.linspace(0.0, 1.0, 100)
+                    # test = np.array(curve.evaluate_multi(s_vals))
+                    # return test.T, cost
 
                 # Generate children, which are the neighboring nodes. Should use 4 or 8 points connectivity for a grid.
                 for adj in dirVal:
