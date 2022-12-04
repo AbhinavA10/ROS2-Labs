@@ -23,14 +23,13 @@ find_package(planner_action_interfaces REQUIRED)
 install(DIRECTORY
   launch
   map
-  src
-  param
+  scripts
   DESTINATION share/${PROJECT_NAME})
 
 # Install Python executables
 install(PROGRAMS
-  src/navigation_server.py
-  src/navigation_client.py
+  scripts/navigation_server.py
+  scripts/navigation_client.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

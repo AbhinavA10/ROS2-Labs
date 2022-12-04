@@ -1,5 +1,6 @@
 # MTE 544 Lab 2 - Particle Filter Localization
 > By Group 8, Ayush Ghosh, Nick Shaju, Abhinav Agrahari
+> [Original repo](https://github.com/ayushghosh21/MTE544-Labs)
 
 This repo is itself a ROS2 workspace. Each folder in `src/` is a ROS2 package
 - `src/particle_filter` - particle filter package created for Lab 2
@@ -111,6 +112,7 @@ source install/setup.bash
 ### Running
 For simulation on House/Office map:
 - `ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py`
+- `ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:=./src/planner/map/office_map/map.yaml`
 - `ros2 launch planner planner.launch.py`
 - For defining goals in RViz:
   - `ros2 run planner navigation_client.py`
