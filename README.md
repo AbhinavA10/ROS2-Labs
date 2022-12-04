@@ -96,6 +96,8 @@ We can subscribe to this global cost map, to get a static costmap of the environ
     - [ROS 2 Navigation](https://ros2-industrial-workshop.readthedocs.io/en/latest/_source/navigation/ROS2-Navigation.html)
     - [Navigating with a Physical Turtlebot 3](https://navigation.ros.org/tutorials/docs/navigation2_on_real_turtlebot3.html)
     - [Getting Started](https://navigation.ros.org/getting_started/index.html)
+- [ROS2 Launch files](https://docs.ros.org/en/foxy/How-To-Guides/Launch-file-different-formats.html)
+- [ROS2 Launch Files substitution](https://docs.ros.org/en/foxy/Tutorials/Intermediate/Launch/Using-Substitutions.html)
 
 ## Lab 3 - Path planning and control
 
@@ -110,9 +112,7 @@ source install/setup.bash
 ```
 
 ### Running
-For simulation on House/Office map:
-- `ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py`
-- `ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:=./src/planner/map/office_map/map.yaml`
+
 - `ros2 launch planner planner.launch.py`
 - For defining goals in RViz:
   - `ros2 run planner navigation_client.py`
@@ -121,5 +121,4 @@ For simulation on House/Office map:
   - `ros2 run planner navigation_client.py --ros-args -p predefined_goal:=True -p goal_x:=4.0 -p goal_y:=0.8`
 
 ### Notes
-- tf contains transform b/w odom and base_footprint. And also odom to map if given
-- map to odom tf publisher in the launch file is altnerative to AMCL, to visualize map in ROS. This static tf assumes odom sensors are perfect and localization is perfect
+See [Lab3_extra_notes](./docs/Lab3_extra_notes.md) for more

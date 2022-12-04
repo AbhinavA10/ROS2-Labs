@@ -1,9 +1,12 @@
-import launch
-from launch.substitutions import Command, LaunchConfiguration
-from ament_index_python.packages import get_package_share_directory
-import launch_ros
 import os
 
+from ament_index_python import get_package_share_directory
+
+from launch import LaunchDescription
+from launch.actions import IncludeLaunchDescription, TimerAction
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import Command, LaunchConfiguration
+from launch_ros.actions import Node
 
 def generate_launch_description():
 
@@ -18,23 +21,38 @@ def generate_launch_description():
 		'planner_server'
 	]
 
-	map_file = os.path.join(get_package_share_directory("planner"), 'map', 'map.yaml')
+	map_file = './src/planner/map/office_map/map.yaml'
 	
-	return launch.LaunchDescription([
-
-		# Start node after 1.5 seconds 
-		# launch.actions.TimerAction(
-		# 	period=1.5,
-		# 	actions=[
-		launch_ros.actions.Node(
+	return LaunchDescription([
+		# include another launch file
+		IncludeLaunchDescription(
+			PythonLaunchDescriptionSource(
+				os.path.join(
+					get_package_share_directory('turtlebot3_gazebo'),
+					'launch/turtlebot3_house.launch.py'))
+		),
+		
+		
+		# Start after Gazebo loads
+		TimerAction(
+			period=7.0,
+			actions=[
+		IncludeLaunchDescription(
+			PythonLaunchDescriptionSource(
+				os.path.join(
+					get_package_share_directory('turtlebot3_navigation2'),
+					'launch/navigation2.launch.py')),
+			launch_arguments={
+				'use_sim_time': 'True',
+				'map': map_file,
+			}.items()
+		),
+		Node(
 			package = "tf2_ros", 
 			executable = "static_transform_publisher",
 			arguments = [str(initial_pose_x), str(initial_pose_y), "0", str(initial_yaw), "0", "0", "odom", "map"]
 		),
-		# 	],
-		# ),
-
-        launch_ros.actions.Node(
+        Node(
             package='nav2_lifecycle_manager',
             executable='lifecycle_manager',
             name='lifecycle_manager_planning',
@@ -44,14 +62,17 @@ def generate_launch_description():
 				{'autostart': True},
 				{'node_names': lifecycle_nodes},
 			]),
-		launch_ros.actions.Node(
+		Node(
 			package='rviz2',
 			executable='rviz2',
 			arguments=['-d', [os.path.join(get_package_share_directory("planner"), 'launch', 'map_rviz.rviz')]]
 		),
-
-		launch_ros.actions.Node(
+		Node(
 			package='planner',
 			executable='navigation_server.py',
 		),
+		
+			],
+		),
+
     ])

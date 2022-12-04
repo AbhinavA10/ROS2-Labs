@@ -6,10 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /Map1
-        - /Map2
-        - /Path1
-        - /Path1/Topic1
+        - /Planned Path1/Topic1
       Splitter Ratio: 0.5
     Tree Height: 505
   - Class: rviz_common/Selection
@@ -95,28 +92,29 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        map:
-          odom:
-            base_footprint:
-              base_link:
-                base_scan:
-                  {}
-                caster_back_link:
-                  {}
-                imu_link:
-                  {}
-                wheel_left_link:
-                  {}
-                wheel_right_link:
-                  {}
+        odom:
+          base_footprint:
+            base_link:
+              base_scan:
+                {}
+              caster_back_link:
+                {}
+              imu_link:
+                {}
+              wheel_left_link:
+                {}
+              wheel_right_link:
+                {}
+          map:
+            {}
       Update Interval: 0
       Value: true
     - Alpha: 0.699999988079071
       Class: rviz_default_plugins/Map
       Color Scheme: costmap
-      Draw Behind: false
+      Draw Behind: true
       Enabled: true
-      Name: Map
+      Name: Costmap
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -142,7 +140,7 @@ Visualization Manager:
       Length: 0.30000001192092896
       Line Style: Lines
       Line Width: 0.029999999329447746
-      Name: Path
+      Name: Planned Path
       Offset:
         X: 0
         Y: 0
@@ -252,25 +250,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 11.857305526733398
+      Distance: 10.065635681152344
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 1.9713127613067627
-        Y: 1.0411925315856934
-        Z: 0.010333467274904251
+        X: 1.9701075553894043
+        Y: 0.46777603030204773
+        Z: -0.637725293636322
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5547963380813599
+      Pitch: 1.0847958326339722
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.71540641784668
+      Yaw: 4.685408592224121
     Saved: ~
 Window Geometry:
   Displays:

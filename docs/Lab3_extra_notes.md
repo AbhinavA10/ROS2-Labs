@@ -23,10 +23,24 @@ Other Notes
 - Gazebo only publishes tf tree from odom downwards
 - Based on running `Nav2` stack in `house_launch` with amcl, `/tf` has `map` -> `odom` -> `base_footprint` -> `base_link`.
 - "with AMCL node" means entire nav stack, and have set the "2D pose" estimate in Rviz
+- tf contains transform b/w odom and base_footprint. And also odom to map if given
+- map to odom tf publisher in the launch file is altnerative to AMCL, to visualize map in ROS. This static tf assumes odom sensors are perfect and localization is perfect
 
 Idea
 - Instead of running the nav2_planner independantly as we have, we could have also run the entire Nav2 stack (with AMCL node) as shown in the lab manual, and would see similar behaviour. In this case, would not need to publish map<->odom tf.
 - Or, could also publish the map to odom tf, in which case we don't need to set 2D pose estimate for AMCL.
+
+
+
+To run the Nav2 stack with on house map simulation, while still generating a costmap, run:
+- `ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py`
+- `ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:=./src/planner/map/office_map/map.yaml`
+- `ros2 launch planner planner.launch.py`
+- For defining goals in RViz:
+  - `ros2 run planner navigation_client.py`
+  - Then through RViz, give a `2D Goal Pose`
+- For pre-defining a goal from terminal (modify x and y as needed): 
+  - `ros2 run planner navigation_client.py --ros-args -p predefined_goal:=True -p goal_x:=4.0 -p goal_y:=0.8`
 
 To run the Nav2 stack with an empty world gazebo simulation, while still generating a costmap, run:
 - `ros2 launch turtlebot3_gazebo empty_world.launch.py`
@@ -40,11 +54,10 @@ To run the Nav2 stack with an empty world gazebo simulation, while still generat
 - pass in pose of 2.33, 0 as goal in client
 - To generate costmap run gazebo with empty_world.launch
 
+# A-* note
+you should have costs assigned to the map, and then have on top of that also the heuristic. The heuristic is what would make your search A*. The ones you mentioned are for the heuristic and not the cost, the cost of each node should be the cost from one node to the immediate neighboring ones. For example, if there’s an obstacle there this should be infinite as you’d not want to go there. You have the information of whether there’s an obstacle or not from the map. We briefly talked about this in L19.
 
-## A-* note
- you should have costs assigned to the map, and then have on top of that also the heuristic. The heuristic is what would make your search A*. The ones you mentioned are for the heuristic and not the cost, the cost of each node should be the cost from one node to the immediate neighboring ones. For example, if there’s an obstacle there this should be infinite as you’d not want to go there. You have the information of whether there’s an obstacle or not from the map. We briefly talked about this in L19.
-
- ## Origin of map
- When you load in the map the top left corner is labeled as (0,0) because it is based on the indexing of the array (top left is row 0 and column 0, as you go to the right your columns increase, as you go down your rows increase). But the actual origin of the map is in the bottom left corner.
+# Origin of map
+When you load in the map the top left corner is labeled as (0,0) because it is based on the indexing of the array (top left is row 0 and column 0, as you go to the right your columns increase, as you go down your rows increase). But the actual origin of the map is in the bottom left corner.
 
 Where the yaml file origin comes in is that it describes the location of the bottom left corner realtive to the odom frame. Therefore the bottom left corner of the map is at (-0.843,-3.94) in the odom frame for this map. You can then relabel the axis knowing this is what the bottom left corner should be and knowing the resolution per pixel specifed in the yaml file.
