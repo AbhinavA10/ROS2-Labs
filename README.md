@@ -116,7 +116,7 @@ source install/setup.bash
 - `ros2 launch planner planner.launch.py`
 - For defining goals in RViz:
   - `ros2 run planner navigation_client.py`
-  - Then through RViz, give a `2D Goal Pose`
+  - Then through RViz, give a `Publish Point`
 - For pre-defining a goal from terminal (modify x and y as needed): 
   - `ros2 run planner navigation_client.py --ros-args -p predefined_goal:=True -p goal_x:=4.0 -p goal_y:=0.8`
 
