@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>planner</name>
+  <version>0.0.0</version>
+  <description>Motion Planner developed for MTE 544 Lab 3</description>
+  <maintainer email="ayush.ghosh@uwaterloo.ca">ayush.ghosh</maintainer>
+  <maintainer email="nshaju@uwaterloo.ca">nshaju</maintainer>
+  <maintainer email="abhi.agrahari@uwaterloo.ca">abhi.agrahari</maintainer>
+  <license>MIT</license>
+  
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
+
+  <depend>rclpy</depend>
+  <depend>action_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>builtin_interfaces</depend>
+  <depend>visualization_msgs</depend>
+  <depend>csv</depend>
+  <depend>sqlite3</depend>
+  <depend>rosbag2</depend>
+  <depend>tf2_msgs</depend>
+  <depend>tf2_py</depend>
+  <depend>planner_action_interfaces</depend>
+
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+
+  <exec_depend>rviz2</exec_depend>
+  
+
+  <!-- <build_depend>rosidl_default_generators</build_depend>
+  <exec_depend>rosidl_default_runtime</exec_depend>
+  <member_of_group>rosidl_interface_packages</member_of_group> -->
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

@@ -1,0 +1,14 @@
+#goal definition
+geometry_msgs/PoseWithCovarianceStamped initial_pose
+float32 goal_x
+float32 goal_y
+---
+#result definition
+bool reached_goal
+float32 estimated_heuristic_cost
+float32 total_distance_travelled
+---
+#feedback definition
+geometry_msgs/PoseStamped current_pose
+builtin_interfaces/Duration navigation_time
+float32 distance_travelled

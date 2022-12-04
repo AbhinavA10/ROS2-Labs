@@ -96,5 +96,28 @@ We can subscribe to this global cost map, to get a static costmap of the environ
     - [Navigating with a Physical Turtlebot 3](https://navigation.ros.org/tutorials/docs/navigation2_on_real_turtlebot3.html)
     - [Getting Started](https://navigation.ros.org/getting_started/index.html)
 
-## Lab 3
-TODO
+## Lab 3 - Path planning and control
+
+### Setup
+To setup the `planner` package, build and source this workspace: 
+
+```bash
+rosdep install --from-paths src --ignore-src -r -y
+pip install scikit-image
+colcon build --symlink-install
+source install/setup.bash
+```
+
+### Running
+For simulation on House/Office map:
+- `ros2 launch turtlebot3_gazebo turtlebot3_house.launch.py`
+- `ros2 launch planner planner.launch.py`
+- For defining goals in RViz:
+  - `ros2 run planner navigation_client.py`
+  - Then through RViz, give a `2D Goal Pose`
+- For pre-defining a goal from terminal (modify x and y as needed): 
+  - `ros2 run planner navigation_client.py --ros-args -p predefined_goal:=True -p goal_x:=4.0 -p goal_y:=0.8`
+
+### Notes
+- tf contains transform b/w odom and base_footprint. And also odom to map if given
+- map to odom tf publisher in the launch file is altnerative to AMCL, to visualize map in ROS. This static tf assumes odom sensors are perfect and localization is perfect
