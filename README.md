@@ -115,3 +115,8 @@ We can subscribe to this global cost map, to get a static costmap of the environ
 
 ### Notes
 See [Lab3_extra_notes](./docs/06_Lab3_extra_notes.md) for more
+
+## Final project
+
+### Running
+- `ros2 launch kalman_filter kalman_filter.launch.py`
