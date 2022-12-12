@@ -19,7 +19,7 @@ def generate_launch_description():
         
         # Start after Gazebo loads
         TimerAction(
-            period=1.0,
+            period=5.0,
             actions=[
                 Node(
                     package='rviz2',
@@ -28,7 +28,11 @@ def generate_launch_description():
                 ),
                 Node(
                     package='kalman_filter',
-                    executable='visualize_odom.py',
+                    executable='path_visualizer.py',
+                ),
+                Node(
+                    package='kalman_filter',
+                    executable='frame_transformer.py',
                 ),
                 Node(
                     package='kalman_filter',
@@ -37,7 +41,11 @@ def generate_launch_description():
                 ExecuteProcess(
                     cmd=['ros2', 'bag', 'play', os.path.join(get_package_share_directory("kalman_filter"), 'bag_files', 'path')],
                     output='screen'
-                )
+                ),
+                # Node(
+                #     package='turtlebot3_teleop',
+                #     executable='teleop_keyboard',
+                # ),
             ],
         ),
     ])

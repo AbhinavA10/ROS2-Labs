@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
+
 import numpy as np
 from numpy.random import randn
 import matplotlib.pyplot as plt
 
-# Example code by TA Christian Mele
+## Example code written by: Christian Mele, adapted to Python by Yue Hu
 
 class KalmanFilter():
     def __init__(self):
@@ -15,7 +16,7 @@ class KalmanFilter():
         # we will be using IMU values for the project, however in this example we
         # use a block with a spring attached to it
         self.xhat = np.matrix([0.5, 1, 0]).transpose() # mean(mu) estimate for the "first" step
-        self.P = 1 # covariance initial estimation between the
+        self.P = np.identity(3) # covariance initial estimation between the
         # the covariance matrix P is the weighted covariance between the
         # motion model definition - establish your robots "movement"
         k = 1 # spring value
@@ -46,7 +47,6 @@ class KalmanFilter():
         x = np.zeros([3, len(T) + 1])
         x[:, [0]] = self.xhat
         y = np.zeros([2, len(T)])
-        y_hat = np.zeros([2, len(T)])
         for k in range(len(T)):
             u = 0.01 # normally you'd initialise this above
 
@@ -89,14 +89,14 @@ class KalmanFilter():
             # help drive that relationship towards zero (P should stabilise).
 
             self.xhat = xhat_k + K * (y[:, [k]] - self.C * xhat_k)
-            self.P =(1 - K * self.C) * P_predict
+            self.P = (np.identity(3) - K * self.C) * P_predict # the full derivation for this is kind of complex relying on
+                                             # some pretty cool probability knowledge
 
             # Store estimate
             xhat_S[:, [k]] = xhat_k
             x_S[:, [k]] = self.xhat
-            y_hat[:, [k]] = self.C*self.xhat
 
-        return x, xhat_S, x_S, y_hat
+        return x, xhat_S, x_S
 
     def plot_results(self, Tfinal, x, xhat_S, x_S):
         T = np.arange(0, Tfinal, self.dt)
@@ -124,7 +124,7 @@ def main():
     print("MTE544 Final Project - Kalman Filter")
     kf = KalmanFilter()
     Tfinal = 10
-    x, xhat_S, x_S, y_hat = kf.run_kalman_filter(Tfinal)
+    x, xhat_S, x_S = kf.run_kalman_filter(Tfinal)
     kf.plot_results(Tfinal, x, xhat_S, x_S)
 
 if __name__ == '__main__':

@@ -17,7 +17,7 @@ find_package(builtin_interfaces REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(tf2_msgs REQUIRED)
 find_package(tf2_py REQUIRED)
-find_package(planner_action_interfaces REQUIRED)
+find_package(kalman_filter_interfaces REQUIRED)
 
 
 install(DIRECTORY
@@ -29,7 +29,8 @@ install(DIRECTORY
 # Install Python executables
 install(PROGRAMS
   scripts/kalman_filter.py
-  scripts/visualize_odom.py
+  scripts/path_visualizer.py
+  scripts/frame_transformer.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

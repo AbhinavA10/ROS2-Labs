@@ -3,7 +3,8 @@ Panels:
     Help Height: 138
     Name: Displays
     Property Tree Widget:
-      Expanded: ~
+      Expanded:
+        - /TF1/Frames1
       Splitter Ratio: 0.5
     Tree Height: 580
   - Class: rviz_common/Selection
@@ -45,7 +46,7 @@ Visualization Manager:
       Frames:
         All Enabled: false
         base_footprint:
-          Value: true
+          Value: false
         base_link:
           Value: false
         base_scan:
@@ -165,7 +166,7 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
-    - Alpha: 1
+    - Alpha: 0.5
       Buffer Length: 1
       Class: rviz_default_plugins/Path
       Color: 239; 41; 41
@@ -173,8 +174,8 @@ Visualization Manager:
       Head Diameter: 0.30000001192092896
       Head Length: 0.20000000298023224
       Length: 0.30000001192092896
-      Line Style: Lines
-      Line Width: 0.029999999329447746
+      Line Style: Billboards
+      Line Width: 0.019999999552965164
       Name: Kalman Filtered Path
       Offset:
         X: 0
@@ -229,25 +230,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 5.816262245178223
+      Distance: 3.1750457286834717
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 1.6561537981033325
-        Y: 0.684592068195343
-        Z: -0.660085916519165
+        X: 1.3181986808776855
+        Y: 0.690903902053833
+        Z: -0.3560820519924164
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.0047968626022339
+      Pitch: 1.2947967052459717
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.525426864624023
+      Yaw: 4.740435600280762
     Saved: ~
 Window Geometry:
   Displays:

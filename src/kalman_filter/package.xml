@@ -28,7 +28,7 @@
   <depend>rosbag2</depend>
   <depend>tf2_msgs</depend>
   <depend>tf2_py</depend>
-  <depend>planner_action_interfaces</depend>
+  <depend>kalman_filter_interfaces</depend>
 
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
