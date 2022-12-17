@@ -31,6 +31,7 @@ install(PROGRAMS
   scripts/kalman_filter.py
   scripts/path_visualizer.py
   scripts/frame_transformer.py
+  scripts/plotter.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

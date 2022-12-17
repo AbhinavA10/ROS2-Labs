@@ -28,11 +28,13 @@ class FrameTransformer(Node):
         self.kf_global_pub = self.create_publisher(PoseStamped, '/kf_global_frame', 10)
         self.odom_robot_pub = self.create_publisher(RobotFrameState, '/odom_robot_frame', 10)
         
-        self.kf_global_frame_pose_msg = PoseStamped()
-        self.kf_corrected_robot_frame_state_prev = np.matrix([0.0, 0.0, 0.0, 0.0]).transpose() # x, x_dot, theta, omega
-        self.kf_global_frame_pose = np.matrix([0.0, 0.0]).transpose() # x,y
-        self.odom_global_frame_pose_prev = Odometry()
+        self.kf_global_frame_pose = PoseStamped()
         self.odom_robot_frame_state = RobotFrameState()
+        self.kf_robot_frame_state_prev = RobotFrameState()
+        self.odom_global_frame_pose_prev = Odometry()
+
+        self.odom_robot_frame_state.header.frame_id = 'odom' # Robot frame origin coincides with odom origin
+        self.kf_global_frame_pose.header.frame_id = 'odom' # Set origin as odom, to visualize in RViz
 
     def odom_callback(self, msg: Odometry):
         """Convert odom message from Global Frame to Robot Frame, for use in MSE comparison"""
@@ -46,39 +48,27 @@ class FrameTransformer(Node):
         delta_x = msg.pose.pose.position.x - self.odom_global_frame_pose_prev.pose.pose.position.x
         delta_y = msg.pose.pose.position.y - self.odom_global_frame_pose_prev.pose.pose.position.y
         delta_x_robot_frame = np.sqrt(delta_x**2 + delta_y**2)
-        
-        self.odom_robot_frame_state.header.frame_id = 'odom' # Robot frame origin coincides with odom origin
         self.odom_robot_frame_state.header.stamp = self.get_clock().now().to_msg()
         self.odom_robot_frame_state.x += delta_x_robot_frame
         self.odom_robot_frame_state.x_dot = np.sqrt(msg.twist.twist.linear.x**2 + msg.twist.twist.linear.y**2)
         self.odom_robot_frame_state.theta = theta
         self.odom_robot_frame_state.omega = msg.twist.twist.angular.z
-        
-        self.odom_robot_pub.publish(self.odom_robot_frame_state)
         # Store last message
         self.odom_global_frame_pose_prev = msg
+        
+        self.odom_robot_pub.publish(self.odom_robot_frame_state)
     
     def kf_callback(self, msg: RobotFrameState):
         """Convert Kalman Filter's corrected state from Robot Frame to Global frame, for use in RViz"""
         theta = msg.theta
-        delta_x = msg.x - self.kf_corrected_robot_frame_state_prev[0, 0]
-        self.kf_global_frame_pose[0,0] += delta_x*np.cos(theta)
-        self.kf_global_frame_pose[1,0] += delta_x*np.sin(theta)
+        delta_x = msg.x - self.kf_robot_frame_state_prev.x
+        self.kf_global_frame_pose.header.stamp = self.get_clock().now().to_msg()
+        self.kf_global_frame_pose.pose.position.x += delta_x*np.cos(theta)
+        self.kf_global_frame_pose.pose.position.y += delta_x*np.sin(theta)
         # Store last message
-        self.kf_corrected_robot_frame_state_prev[0, 0] = msg.x
-        self.kf_corrected_robot_frame_state_prev[1, 0] = msg.x_dot
-        self.kf_corrected_robot_frame_state_prev[2, 0] = msg.theta
-        self.kf_corrected_robot_frame_state_prev[3, 0] = msg.omega
+        self.kf_robot_frame_state_prev = msg
 
-        self.publish_kf_global_frame()
-    
-    def publish_kf_global_frame(self):
-        """Publish Kalman Filter's state in the global frame"""
-        self.kf_global_frame_pose_msg.header.frame_id = 'odom' # Set origin as odom, to visualize in RViz
-        self.kf_global_frame_pose_msg.header.stamp = self.get_clock().now().to_msg()
-        self.kf_global_frame_pose_msg.pose.position.x = self.kf_global_frame_pose[0, 0]
-        self.kf_global_frame_pose_msg.pose.position.y = self.kf_global_frame_pose[1, 0]
-        self.kf_global_pub.publish(self.kf_global_frame_pose_msg)
+        self.kf_global_pub.publish(self.kf_global_frame_pose)
 
     def euler_from_quaternion(self, quaternion):       
         """

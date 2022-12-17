@@ -37,14 +37,18 @@ def generate_launch_description():
                     package='kalman_filter',
                     executable='kalman_filter.py',
                 ),
+                Node(
+                    package='kalman_filter',
+                    executable='plotter.py',
+                ),
                 ExecuteProcess(
                     cmd=['ros2', 'bag', 'play', os.path.join(get_package_share_directory("kalman_filter"), 'bag_files', 'path')],
                     output='screen'
                 ),
-                ExecuteProcess(
-                    cmd=['ros2', 'bag', 'record', '-o', os.path.join('./src/kalman_filter/bag_files', 'kalman_filter_output'), '--all'],
-                    output='screen'
-                ),
+                # ExecuteProcess(
+                #     cmd=['ros2', 'bag', 'record', '-o', os.path.join('./src/kalman_filter/bag_files', 'kalman_filter_output'), '--all'],
+                #     output='screen'
+                # ),
                 # Node(
                 #     package='turtlebot3_teleop',
                 #     executable='teleop_keyboard',
