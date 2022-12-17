@@ -31,7 +31,7 @@ class FrameTransformer(Node):
         self.kf_global_frame_pose_msg = PoseStamped()
         self.kf_corrected_robot_frame_state_prev = np.matrix([0.0, 0.0, 0.0, 0.0]).transpose() # x, x_dot, theta, omega
         self.kf_global_frame_pose = np.matrix([0.0, 0.0]).transpose() # x,y
-        self.odom_global_frame_pose_prev = np.matrix([0.0, 0.0, 0.0]).transpose() # x, y, theta
+        self.odom_global_frame_pose_prev = Odometry()
         self.odom_robot_frame_state = RobotFrameState()
 
     def odom_callback(self, msg: Odometry):
@@ -43,20 +43,20 @@ class FrameTransformer(Node):
                 msg.pose.pose.orientation.w
                 )
         _, _, theta = self.euler_from_quaternion(quaternion)
-        delta_x = msg.pose.pose.position.x - self.odom_global_frame_pose_prev[0, 0]
-        delta_y = msg.pose.pose.position.y - self.odom_global_frame_pose_prev[1, 0]
+        delta_x = msg.pose.pose.position.x - self.odom_global_frame_pose_prev.pose.pose.position.x
+        delta_y = msg.pose.pose.position.y - self.odom_global_frame_pose_prev.pose.pose.position.y
         delta_x_robot_frame = np.sqrt(delta_x**2 + delta_y**2)
- 
+        
         self.odom_robot_frame_state.header.frame_id = 'odom' # Robot frame origin coincides with odom origin
         self.odom_robot_frame_state.header.stamp = self.get_clock().now().to_msg()
         self.odom_robot_frame_state.x += delta_x_robot_frame
+        self.odom_robot_frame_state.x_dot = np.sqrt(msg.twist.twist.linear.x**2 + msg.twist.twist.linear.y**2)
         self.odom_robot_frame_state.theta = theta
-        # Store last message
-        self.odom_global_frame_pose_prev[0,0] = msg.pose.pose.position.x
-        self.odom_global_frame_pose_prev[1,0] = msg.pose.pose.position.y
-        self.odom_global_frame_pose_prev[2,0] = theta
-
+        self.odom_robot_frame_state.omega = msg.twist.twist.angular.z
+        
         self.odom_robot_pub.publish(self.odom_robot_frame_state)
+        # Store last message
+        self.odom_global_frame_pose_prev = msg
     
     def kf_callback(self, msg: RobotFrameState):
         """Convert Kalman Filter's corrected state from Robot Frame to Global frame, for use in RViz"""

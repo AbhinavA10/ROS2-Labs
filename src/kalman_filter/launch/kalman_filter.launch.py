@@ -42,7 +42,7 @@ def generate_launch_description():
                     output='screen'
                 ),
                 ExecuteProcess(
-                    cmd=['ros2', 'bag', 'record', '-o', os.path.join('./src/kalman_filter/bag_files', 'output'), '--all'],
+                    cmd=['ros2', 'bag', 'record', '-o', os.path.join('./src/kalman_filter/bag_files', 'kalman_filter_output'), '--all'],
                     output='screen'
                 ),
                 # Node(
