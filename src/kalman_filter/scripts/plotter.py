@@ -29,6 +29,7 @@ class Plotter(Node):
         self.kf_corrections = []
 
         self.start_time = self.get_clock().now()
+        self.figure_number = 0
     
     def get_seconds_since_start(self) -> float:
         """Return seconds since this node started"""
@@ -37,7 +38,7 @@ class Plotter(Node):
     def odom_callback(self, msg: RobotFrameState):
         """Store latest odom message"""
         self.ground_truth = msg
-        self.get_logger().info(f"Ground Truth x_dot: {msg.x_dot}")
+        # self.get_logger().info(f"Ground Truth x_dot: {msg.x_dot}")
 
     def kf_prediction_callback(self, msg: RobotFrameState):
         """Store latest Kalman Filter Prediction message"""
@@ -64,28 +65,52 @@ class Plotter(Node):
         ground_truths = np.array(self.ground_truths)
         kf_predictions = np.array(self.kf_predictions)
         kf_corrections = np.array(self.kf_corrections)
+        # Print data point at ~middle of data
+        self.get_logger().info(f"SAMPLE DATA POINT")
+        self.get_logger().info(f"Time: {times[int(times.shape[0]/2)]}")
+        self.get_logger().info(f"Ground Truth: {ground_truths[int(ground_truths.shape[0]/2),:]}")
+        self.get_logger().info(f"Prediction: {kf_corrections[int(kf_corrections.shape[0]/2),:]}")
+        self.get_logger().info(f"Correction: {kf_predictions[int(kf_predictions.shape[0]/2),:]}")
         
-        plt.figure(1)
-        plt.plot(times, kf_corrections[:,0])
-        plt.plot(times, kf_corrections[:,1])
-        plt.plot(times, kf_corrections[:,2])
-        plt.plot(times, kf_corrections[:,3]) 
-        plt.plot(times, ground_truths[:,0])
-        plt.plot(times, ground_truths[:,1])
-        plt.plot(times, ground_truths[:,2])
-        plt.plot(times, ground_truths[:,3])
-        plt.legend(['x est','x_dot est', 'theta est', 'omega est', 'x true','x_dot true', 'theta true', 'omega true'])
-        plt.figure(2)
-        plt.plot(times, kf_predictions[:,0])
-        plt.plot(times, kf_predictions[:,1])
-        plt.plot(times, kf_predictions[:,2])
-        plt.plot(times, kf_predictions[:,3])
-        plt.plot(times, ground_truths[:,0])
-        plt.plot(times, ground_truths[:,1])
-        plt.plot(times, ground_truths[:,2])
-        plt.plot(times, ground_truths[:,3])
-        plt.legend(['x pred','x_dot pred', 'theta pred', 'omega pred', 'x true','x_dot true', 'theta true', 'omega true'])
+        self.get_logger().info(f"MSE FOR PREDICTIONS")
+        self.show_plot(times,
+                    [kf_predictions[:,0], ground_truths[:,0], kf_predictions[:,1], ground_truths[:,1], kf_predictions[:,2], ground_truths[:,2], kf_predictions[:,3],  ground_truths[:,3]],
+                    ['x pred', 'x true', 'x_dot pred', 'x_dot true', 'theta pred', 'theta true', 'omega pred', 'omega true'],
+                    ['Distance [m]', 'Velocity [m/s]', 'Angle [rad]', 'Angular Velocity [rad/s]'],
+                    "Prediction vs. Ground Truth")
+        self.get_logger().info(f"MSE FOR ESTIMATIONS")
+        self.show_plot(times,
+                    [kf_corrections[:,0], ground_truths[:,0], kf_corrections[:,1], ground_truths[:,1], kf_corrections[:,2], ground_truths[:,2], kf_corrections[:,3],  ground_truths[:,3]],
+                    ['x est', 'x true', 'x_dot est', 'x_dot true', 'theta est', 'theta true', 'omega est', 'omega true'],
+                    ['Distance [m]', 'Velocity [m/s]', 'Angle [rad]', 'Angular Velocity [rad/s]'],
+                    "Estimate vs. Ground Truth")
         plt.show()
+    
+    def show_plot(self, times: np.ndarray, datas: list, line_labels: list, ylabels: list, title: str):
+        # Make overall plot
+        self.figure_number +=1
+        plt.figure(self.figure_number, figsize=(10,8))
+        plt.title(title)
+        for i in range(len(line_labels)):
+            plt.plot(times, datas[i], label=line_labels[i])
+        plt.legend(loc="upper left")
+        plt.xlabel("Time [s]")
+        plt.grid()
+
+        # Make detailed subplots
+        fig, axs = plt.subplots(int(len(line_labels)/2), figsize=(7, 11))
+        fig.suptitle(title)
+        for i in range(int(len(line_labels)/2)):
+            self.figure_number +=1
+            axs[i].plot(times, datas[2*i], label=line_labels[2*i])
+            axs[i].plot(times, datas[2*i+1], label=line_labels[2*i+1])
+            mse = (np.square(datas[2*i] - datas[2*i+1])).mean()
+            self.get_logger().info(f"MSE {line_labels[2*i]}<->{line_labels[2*i+1]}: {mse}")
+            axs[i].legend()
+            axs[i].set(ylabel=ylabels[i])
+            axs[i].grid()
+        axs[-1].set(xlabel="Time [s]")
+        fig.tight_layout()
 
 def main(args=None):
     rclpy.init(args=args)
