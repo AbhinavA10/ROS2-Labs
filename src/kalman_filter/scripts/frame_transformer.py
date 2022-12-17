@@ -11,29 +11,31 @@ import numpy as np
 import math
 
 class FrameTransformer(Node):
-    """Converts between Robot Frame to global frame"""
+    """Converts between Robot Frame and global frame"""
+
+    # ---- Explanation on Reference Frames ------ 
+    # The 'robot frame' tracks states of [x, x_dot, theta, omega]". The `x` in this frame is
+    # the distance along the 'path'. `theta` is the orientation of the robot, with respect to the global frame
+    # The 'global frame' tracks position of the robot as [x,y,theta]. `x` and `y` are global positions 
+    # of the robot. `theta` is again the orientation of the robot, with respect to the global frame
 
     def __init__(self):
         super().__init__('frame_transformer')
-        self.kf_global_pose = PoseStamped()
+        # Subscribe to ground truth and Kalman Filter state updates
         self.odom_sub = self.create_subscription(Odometry, '/odom', self.odom_callback, QoSProfile(depth=300, reliability=ReliabilityPolicy.BEST_EFFORT))
-        self.kf_correct_sub = self.create_subscription(RobotFrameState, '/kf_corrected', self.kf_correct_callback, QoSProfile(depth=300, reliability=ReliabilityPolicy.BEST_EFFORT))
-        self.kf_global_pub = self.create_publisher(PoseStamped, '/kf_global_pose', 10)
+        self.kf_correct_sub = self.create_subscription(RobotFrameState, '/kf_corrected_robot_frame', self.kf_callback, QoSProfile(depth=300, reliability=ReliabilityPolicy.BEST_EFFORT))
+        # Publish above states in the oppisite frame
+        self.kf_global_pub = self.create_publisher(PoseStamped, '/kf_global_frame', 10)
         self.odom_robot_pub = self.create_publisher(RobotFrameState, '/odom_robot_frame', 10)
-
-        # Conversion from Robot Frame to Global frame
-        self.kf_pose_corrected_prev = np.matrix([0.0, 0.0, 0.0, 0.0]).transpose() # x, x_dot, theta, omega
-        self.global_pose_corrected = np.matrix([0.0, 0.0]).transpose() # x,y
-        self.odom_global_pose_prev = np.matrix([0.0, 0.0, 0.0]).transpose() # x,y, theta
-        self.odom_robotframe_pose = RobotFrameState()
-        self.odom_robotframe_pose.x = 0.0
+        
+        self.kf_global_frame_pose_msg = PoseStamped()
+        self.kf_corrected_robot_frame_state_prev = np.matrix([0.0, 0.0, 0.0, 0.0]).transpose() # x, x_dot, theta, omega
+        self.kf_global_frame_pose = np.matrix([0.0, 0.0]).transpose() # x,y
+        self.odom_global_frame_pose_prev = np.matrix([0.0, 0.0, 0.0]).transpose() # x, y, theta
+        self.odom_robot_frame_state = RobotFrameState()
 
     def odom_callback(self, msg: Odometry):
-        # convert odom globalFrame message to robot frame
-        delta_x = msg.pose.pose.position.x - self.odom_global_pose_prev[0, 0]
-        delta_y = msg.pose.pose.position.y - self.odom_global_pose_prev[1, 0]
-        delta_x_robot_frame = np.sqrt(delta_x**2 + delta_y**2)
-        # get theta from  msg.pose.pose.orientation quaternion
+        """Convert odom message from Global Frame to Robot Frame, for use in MSE comparison"""
         quaternion = (
                 msg.pose.pose.orientation.x,
                 msg.pose.pose.orientation.y,
@@ -41,36 +43,42 @@ class FrameTransformer(Node):
                 msg.pose.pose.orientation.w
                 )
         _, _, theta = self.euler_from_quaternion(quaternion)
+        delta_x = msg.pose.pose.position.x - self.odom_global_frame_pose_prev[0, 0]
+        delta_y = msg.pose.pose.position.y - self.odom_global_frame_pose_prev[1, 0]
+        delta_x_robot_frame = np.sqrt(delta_x**2 + delta_y**2)
+ 
+        self.odom_robot_frame_state.header.frame_id = 'odom' # Robot frame origin coincides with odom origin
+        self.odom_robot_frame_state.header.stamp = self.get_clock().now().to_msg()
+        self.odom_robot_frame_state.x += delta_x_robot_frame
+        self.odom_robot_frame_state.theta = theta
+        # Store last message
+        self.odom_global_frame_pose_prev[0,0] = msg.pose.pose.position.x
+        self.odom_global_frame_pose_prev[1,0] = msg.pose.pose.position.y
+        self.odom_global_frame_pose_prev[2,0] = theta
 
-        self.odom_robotframe_pose.header.frame_id = 'odom'
-        self.odom_robotframe_pose.header.stamp = self.get_clock().now().to_msg()
-        self.odom_robotframe_pose.x += delta_x_robot_frame
-        self.odom_robotframe_pose.theta = theta
-        self.odom_robot_pub.publish(self.odom_robotframe_pose)
-
-        self.odom_global_pose_prev[0,0] = msg.pose.pose.position.x
-        self.odom_global_pose_prev[1,0] = msg.pose.pose.position.y
-        self.odom_global_pose_prev[2,0] = theta
+        self.odom_robot_pub.publish(self.odom_robot_frame_state)
     
-    def kf_correct_callback(self, msg: RobotFrameState):
+    def kf_callback(self, msg: RobotFrameState):
+        """Convert Kalman Filter's corrected state from Robot Frame to Global frame, for use in RViz"""
         theta = msg.theta
-        delta_x = msg.x - self.kf_pose_corrected_prev[0, 0]
-        self.global_pose_corrected[0,0] += delta_x*np.cos(theta)
-        self.global_pose_corrected[1,0] += delta_x*np.sin(theta)
+        delta_x = msg.x - self.kf_corrected_robot_frame_state_prev[0, 0]
+        self.kf_global_frame_pose[0,0] += delta_x*np.cos(theta)
+        self.kf_global_frame_pose[1,0] += delta_x*np.sin(theta)
+        # Store last message
+        self.kf_corrected_robot_frame_state_prev[0, 0] = msg.x
+        self.kf_corrected_robot_frame_state_prev[1, 0] = msg.x_dot
+        self.kf_corrected_robot_frame_state_prev[2, 0] = msg.theta
+        self.kf_corrected_robot_frame_state_prev[3, 0] = msg.omega
+
         self.publish_kf_global_frame()
-        # Store last KF message
-        self.kf_pose_corrected_prev[0, 0] = msg.x
-        self.kf_pose_corrected_prev[1, 0] = msg.x_dot
-        self.kf_pose_corrected_prev[2, 0] = msg.theta
-        self.kf_pose_corrected_prev[3, 0] = msg.omega
-        #TODO: do some mse between KF topic and odom topic to see how close we are to ground truth in another node
     
     def publish_kf_global_frame(self):
-        self.kf_global_pose.header.frame_id = 'odom'
-        self.kf_global_pose.header.stamp = self.get_clock().now().to_msg()
-        self.kf_global_pose.pose.position.x = self.global_pose_corrected[0, 0]
-        self.kf_global_pose.pose.position.y = self.global_pose_corrected[1, 0]
-        self.kf_global_pub.publish(self.kf_global_pose)
+        """Publish Kalman Filter's state in the global frame"""
+        self.kf_global_frame_pose_msg.header.frame_id = 'odom' # Set origin as odom, to visualize in RViz
+        self.kf_global_frame_pose_msg.header.stamp = self.get_clock().now().to_msg()
+        self.kf_global_frame_pose_msg.pose.position.x = self.kf_global_frame_pose[0, 0]
+        self.kf_global_frame_pose_msg.pose.position.y = self.kf_global_frame_pose[1, 0]
+        self.kf_global_pub.publish(self.kf_global_frame_pose_msg)
 
     def euler_from_quaternion(self, quaternion):       
         """

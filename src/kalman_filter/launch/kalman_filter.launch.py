@@ -9,14 +9,13 @@ from launch_ros.actions import Node
 
 def generate_launch_description():  
     return LaunchDescription([
-        # include another launch file
+        # include Gazebo launch file
         # IncludeLaunchDescription(
         #     PythonLaunchDescriptionSource(
         #         os.path.join(
         #             get_package_share_directory('turtlebot3_gazebo'),
         #             'launch/empty_world.launch.py'))
         # ),
-        
         # Start after Gazebo loads
         TimerAction(
             period=5.0,
@@ -42,9 +41,18 @@ def generate_launch_description():
                     cmd=['ros2', 'bag', 'play', os.path.join(get_package_share_directory("kalman_filter"), 'bag_files', 'path')],
                     output='screen'
                 ),
+                ExecuteProcess(
+                    cmd=['ros2', 'bag', 'record', '-o', os.path.join('./src/kalman_filter/bag_files', 'output'), '--all'],
+                    output='screen'
+                ),
                 # Node(
                 #     package='turtlebot3_teleop',
                 #     executable='teleop_keyboard',
+                # ),
+                # Node(
+                #     package='rqt_plot',
+                #     executable='rqt_plot',
+                #     arguments=['/kf_corrected_robot_frame/x /odom_robot_frame/x']
                 # ),
             ],
         ),
