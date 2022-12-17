@@ -120,8 +120,58 @@ See [Lab3_extra_notes](./docs/06_Lab3_extra_notes.md) for more
 
 ### Running
 - `ros2 launch kalman_filter kalman_filter.launch.py`
+- `ros2 run turtlebot3_teleop teleop_keyboard` # optional, when not using a rosbag
+- In RViz, click on `Publish Point` when you want to calculate MSE or view plots
 
-Using foxglove,
-- load mcap bagfile into foxglove
-- imu message has diagonal accerelation covariance 3x3 of `0.000289`
-- angular velocity covariance of `4*10-8`
+### Output on linear path (rosbag)
+Green path is ground truth (`/odom`), red path is Kalman Filter's output
+![](./images/kalman_filter/output/rosbag/rviz.png)
+
+![](./images/kalman_filter/output/rosbag/est_v_gt_detailed.png)
+
+```
+SAMPLE DATA POINT
+Time: 12.833992352
+Data format: [x x_dot theta omega]
+Ground Truth: [1.52593827 0.1499646  0.20192347 0.02000288]
+Prediction: [1.55294335 0.13422081 0.20561229 0.01981419]
+Correction: [1.55226839 0.13202603 0.20561229 0.01981421]
+MSE FOR PREDICTIONS
+MSE x_{predicted}<->x_{true}: 0.0009708449765590233
+MSE \dot x_{predicted}<->\dot x_{true}: 0.0007586343105548605
+MSE \theta_{predicted}<->\theta_{true}: 1.914443278702474e-05
+MSE \omega_{predicted}<->\omega_{true}: 8.798892218083679e-07
+MSE FOR ESTIMATES
+MSE x_{estimated}<->x_{true}: 0.0010141189687193778
+MSE \dot x_{estimated}<->\dot x_{true}: 0.0006000109119739481
+MSE \theta_{estimated}<->\theta_{true}: 1.9144424817151544e-05
+MSE \omega_{estimated}<->\omega_{true}: 8.79886637556672e-07
+```
+
+### Output on nonlinear path (teleop)
+Green path is ground truth (`/odom`), red path is Kalman Filter's output
+![](./images/kalman_filter/output/nonlinear_path/rviz.png)
+
+![](./images/kalman_filter/output/nonlinear_path/est_v_gt_detailed.png)
+
+```
+SAMPLE DATA POINT
+Data format: [x x_dot theta omega]
+Time: 68.148028004
+Ground Truth: [ 8.27700996  0.21383232 -0.57170808  2.35038471]
+Prediction: [ 8.33310413  0.21715455 -6.78690386  2.30214477]
+Correction: [ 8.33298302  0.21676019 -6.78690386  2.30214787]
+MSE FOR PREDICTIONS
+MSE x_{predicted}<->x_{true}: 0.002479544218576961
+MSE \dot x_{predicted}<->\dot x_{true}: 0.0010987164192431524
+MSE \theta_{predicted}<->\theta_{true}: 79.97616850354441
+MSE \omega_{predicted}<->\omega_{true}: 0.0018624278909441833
+MSE FOR ESTIMATES
+MSE x_{estimated}<->x_{true}: 0.002538581397015852
+MSE \dot x_{estimated}<->\dot x_{true}: 0.0008478008704528217
+MSE \theta_{estimated}<->\theta_{true}: 79.97616842031054
+MSE \omega_{estimated}<->\omega_{true}: 0.0018624265726317453
+```
+### ROS Graph
+
+![](./images/kalman_filter/rosgraph.svg)

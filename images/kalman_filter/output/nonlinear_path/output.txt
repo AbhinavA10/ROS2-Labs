@@ -1,0 +1,16 @@
+SAMPLE DATA POINT
+Data format: [x x_dot theta omega]
+Time: 68.148028004
+Ground Truth: [ 8.27700996  0.21383232 -0.57170808  2.35038471]
+Prediction: [ 8.33310413  0.21715455 -6.78690386  2.30214477]
+Correction: [ 8.33298302  0.21676019 -6.78690386  2.30214787]
+MSE FOR PREDICTIONS
+MSE x_{predicted}<->x_{true}: 0.002479544218576961
+MSE \dot x_{predicted}<->\dot x_{true}: 0.0010987164192431524
+MSE \theta_{predicted}<->\theta_{true}: 79.97616850354441
+MSE \omega_{predicted}<->\omega_{true}: 0.0018624278909441833
+MSE FOR ESTIMATES
+MSE x_{estimated}<->x_{true}: 0.002538581397015852
+MSE \dot x_{estimated}<->\dot x_{true}: 0.0008478008704528217
+MSE \theta_{estimated}<->\theta_{true}: 79.97616842031054
+MSE \omega_{estimated}<->\omega_{true}: 0.0018624265726317453

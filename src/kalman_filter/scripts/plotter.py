@@ -29,7 +29,6 @@ class Plotter(Node):
         self.kf_corrections = []
 
         self.start_time = self.get_clock().now()
-        self.figure_number = 0
     
     def get_seconds_since_start(self) -> float:
         """Return seconds since this node started"""
@@ -67,29 +66,29 @@ class Plotter(Node):
         kf_corrections = np.array(self.kf_corrections)
         # Print data point at ~middle of data
         self.get_logger().info(f"SAMPLE DATA POINT")
+        self.get_logger().info(f"Data format: [x x_dot theta omega]")
         self.get_logger().info(f"Time: {times[int(times.shape[0]/2)]}")
         self.get_logger().info(f"Ground Truth: {ground_truths[int(ground_truths.shape[0]/2),:]}")
         self.get_logger().info(f"Prediction: {kf_corrections[int(kf_corrections.shape[0]/2),:]}")
         self.get_logger().info(f"Correction: {kf_predictions[int(kf_predictions.shape[0]/2),:]}")
         
         self.get_logger().info(f"MSE FOR PREDICTIONS")
-        self.show_plot(times,
+        self.make_plots(times,
                     [kf_predictions[:,0], ground_truths[:,0], kf_predictions[:,1], ground_truths[:,1], kf_predictions[:,2], ground_truths[:,2], kf_predictions[:,3],  ground_truths[:,3]],
-                    ['x pred', 'x true', 'x_dot pred', 'x_dot true', 'theta pred', 'theta true', 'omega pred', 'omega true'],
+                    [r"$x_{predicted}$", r"$x_{true}$", r"$\dot x_{predicted}$", r"$\dot x_{true}$", r"$\theta_{predicted}$", r"$\theta_{true}$", r"$\omega_{predicted}$", r"$\omega_{true}$"],
                     ['Distance [m]', 'Velocity [m/s]', 'Angle [rad]', 'Angular Velocity [rad/s]'],
                     "Prediction vs. Ground Truth")
-        self.get_logger().info(f"MSE FOR ESTIMATIONS")
-        self.show_plot(times,
+        self.get_logger().info(f"MSE FOR ESTIMATES")
+        self.make_plots(times,
                     [kf_corrections[:,0], ground_truths[:,0], kf_corrections[:,1], ground_truths[:,1], kf_corrections[:,2], ground_truths[:,2], kf_corrections[:,3],  ground_truths[:,3]],
-                    ['x est', 'x true', 'x_dot est', 'x_dot true', 'theta est', 'theta true', 'omega est', 'omega true'],
+                    [r"$x_{estimated}$", r"$x_{true}$", r"$\dot x_{estimated}$", r"$\dot x_{true}$", r"$\theta_{estimated}$", r"$\theta_{true}$", r"$\omega_{estimated}$", r"$\omega_{true}$"],
                     ['Distance [m]', 'Velocity [m/s]', 'Angle [rad]', 'Angular Velocity [rad/s]'],
                     "Estimate vs. Ground Truth")
         plt.show()
     
-    def show_plot(self, times: np.ndarray, datas: list, line_labels: list, ylabels: list, title: str):
+    def make_plots(self, times: np.ndarray, datas: list, line_labels: list, ylabels: list, title: str):
         # Make overall plot
-        self.figure_number +=1
-        plt.figure(self.figure_number, figsize=(10,8))
+        plt.figure(figsize=(10,8))
         plt.title(title)
         for i in range(len(line_labels)):
             plt.plot(times, datas[i], label=line_labels[i])
@@ -101,11 +100,10 @@ class Plotter(Node):
         fig, axs = plt.subplots(int(len(line_labels)/2), figsize=(7, 11))
         fig.suptitle(title)
         for i in range(int(len(line_labels)/2)):
-            self.figure_number +=1
             axs[i].plot(times, datas[2*i], label=line_labels[2*i])
             axs[i].plot(times, datas[2*i+1], label=line_labels[2*i+1])
             mse = (np.square(datas[2*i] - datas[2*i+1])).mean()
-            self.get_logger().info(f"MSE {line_labels[2*i]}<->{line_labels[2*i+1]}: {mse}")
+            self.get_logger().info(f"MSE {line_labels[2*i][1:-1]}<->{line_labels[2*i+1][1:-1]}: {mse}")
             axs[i].legend()
             axs[i].set(ylabel=ylabels[i])
             axs[i].grid()
