@@ -1,4 +1,4 @@
-# MTE 544 Lab 2 - Particle Filter Localization
+# ROS2 Labs
 
 This repo a ROS2 workspace. Each folder in `src/` is a ROS2 package
 - `src/kalman_filter` - Kalman Filter Localization
@@ -25,6 +25,7 @@ See [my whitepaper report](./docs/10_Kalman_Filter_Report.pdf) for a complete ex
 > [Click here](https://youtu.be/7CEmD8rd0zs) for a Youtube video of the Kalman Filter in action!
 
 In below image, the green path is ground truth, while red is the Kalamn Filter's estimate.
+
 [![](./images/kalman_filter/animation.gif)](https://youtu.be/7CEmD8rd0zs)
 
 ## Running
@@ -37,6 +38,7 @@ In below image, the green path is ground truth, while red is the Kalamn Filter's
 A fairly linear path, provided by a precorded rosbag.
 
 In below image, the green path is ground truth, while red is the Kalamn Filter's estimate.
+
 ![](./images/kalman_filter/output/rosbag/rviz.png)
 
 ![](./images/kalman_filter/output/rosbag/est_v_gt_detailed.png)
@@ -48,6 +50,7 @@ See [output folder for more plots and stats](./images/kalman_filter/output/rosba
 Testing with a rather non-linear path. Evidently, a linear Kalman Filter is not suitable for such a path.
 
 In below image, the green path is ground truth, while red is the Kalamn Filter's estimate.
+
 ![](./images/kalman_filter/output/nonlinear_path/rviz.png)
 
 ![](./images/kalman_filter/output/nonlinear_path/est_v_gt_detailed.png)
@@ -100,6 +103,7 @@ This `planner` package implements an A* Planner based on a given map, and a P-co
 > [Click here](https://youtu.be/dRcdahp3rSI) for a Youtube video of the path planner in action!
 
 Pink/Purple/Blue is the inflated costmap. Green is the path the robot autonomously follows
+
 [![](./images/planner/animation.gif)](https://youtu.be/dRcdahp3rSI)
 
 ## Running
@@ -136,6 +140,7 @@ This `particle_filter` package implements a Particle Filter for localizing a sta
 > [Click here](https://youtu.be/S0fdMmHizCg) for a Youtube video of the particle filter in action!
 
 Yellow arrows are the Particles, while `red` is the super-imposed LiDAR data with the origin at average pose of the particle filter.
+
 [![](./images/particle_filter/animation.gif)](https://youtu.be/S0fdMmHizCg)
 
 ## Running 
